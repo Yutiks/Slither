@@ -1,3 +1,7 @@
+import pygame.freetype
+import pygame as pg
+pg.init()
+
 # DISPLAY PARAMETERS -->
 WIDTH = 800
 HEIGHT = 800
@@ -15,3 +19,5 @@ CELL_SIZE = WIDTH / CELL_NUMBER_X - 1
 
 # FPS LIMIT -->
 FPS = 60
+
+FONT = pygame.freetype.Font("fonts/main_font_2.ttf", 50)

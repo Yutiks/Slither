@@ -1,9 +1,8 @@
-import pygame as pg
-from settings import *
-import cell
-import snake
-import snack_for_snake as snack
 import random
+import cell
+import snack_for_snake as snack
+import snake
+from settings import *
 
 pg.init()
 
@@ -13,8 +12,8 @@ class Game:
         # GAME DATA -->
         self.running = True
         self.display = pg.display.set_mode((WIDTH, HEIGHT))
-        self.clock = pg.time.Clock()
-
+        self.clock = pg.time.Clock() 
+        self.font = FONT
         # CELL DATA -->
         self.cell_x = 0
         self.cell_y = 0
@@ -26,9 +25,7 @@ class Game:
         self.direction_snake = "right"
         self.speed_snake = pg.USEREVENT
         pg.time.set_timer(self.speed_snake, 100)
-        length_at_beginning = 3
-        for i in range(length_at_beginning):
-            self.length_begin = self.snake.grow()
+        self.length_value = 0
 
         # SNACK DATA -->
         self.random_place_x = []
@@ -80,17 +77,26 @@ class Game:
             cell_from_list.render(self.display)
         self.snake.render(self.display)
         self.snack.render(self.display)
+        self.font.render_to(self.display, [WIDTH - 210, 10], f"length: {str(self.length_value)}", BLACK)
         pg.display.flip()
 
     def movement(self):
         if self.snake.rect.right > WIDTH or self.snake.rect.left < 0:
             self.running = False
-        if self.snake.rect.bottom > HEIGHT or self.snake.rect.top < 0:
+        elif self.snake.rect.bottom > HEIGHT or self.snake.rect.top < 0:
             self.running = False
-        if self.snake.rect.colliderect(self.snack.rect):
+        for i in range(len(self.snake.parts_of_snake) - 1):
+            if self.snake.parts_of_snake[0].colliderect((self.snake.parts_of_snake[i + 1])):
+                if i > 0:
+                    self.running = False
+            if self.snake.parts_of_snake[i + 1].colliderect(self.snack.rect):
+                self.snack.rect.x = random.choice(self.random_place_x)
+                self.snack.rect.y = random.choice(self.random_place_y)
+        if self.snake.parts_of_snake[0].colliderect(self.snack.rect):
             self.snack.rect.x = random.choice(self.random_place_x)
             self.snack.rect.y = random.choice(self.random_place_y)
             self.snake.grow()
+        self.length_value = len(self.snake.parts_of_snake)
 
     def run(self):
         while self.running:
